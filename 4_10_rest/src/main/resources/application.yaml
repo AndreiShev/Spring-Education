@@ -1,0 +1,24 @@
+spring:
+  main:
+    allow-circular-references: true
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    open-in-view: false
+    hibernate:
+      ddl-auto=update: create
+  datasource:
+    url: jdbc:postgresql://localhost:6432/rest_db
+    username: postgres
+    password: postgres
+    hikari:
+      schema: rest_schema
+      connection-ini-sql: CREATE schema  if not exists rest_schema
+      connection-timeout: 10000
+    driver-class-name: org.postgresql.Driver
+
+app:
+  check-client-api-header: false
+  client-api-key: 12345
