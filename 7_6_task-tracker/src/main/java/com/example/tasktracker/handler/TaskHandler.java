@@ -3,25 +3,26 @@ package com.example.tasktracker.handler;
 import com.example.tasktracker.dto.TaskResponse;
 import com.example.tasktracker.dto.UpdateTaskRequest;
 import com.example.tasktracker.dto.UpsertTaskRequest;
-import com.example.tasktracker.dto.UserResponse;
 import com.example.tasktracker.entity.Task;
 import com.example.tasktracker.entity.TaskStatus;
 import com.example.tasktracker.entity.User;
-import com.example.tasktracker.exception.ObjectCannotBeUpdated;
 import com.example.tasktracker.mapper.TaskMapper;
 import com.example.tasktracker.repository.TaskRepository;
 import com.example.tasktracker.repository.UserRepository;
 import com.example.tasktracker.utils.Utils;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 
 @Component
 @RequiredArgsConstructor
@@ -47,8 +48,8 @@ public class TaskHandler {
     }
 
     public Mono<ServerResponse> getTaskById(ServerRequest request) {
-        return ServerResponse.ok()
-                .body(taskRepository.findById(request.pathVariable("id")), TaskResponse.class);
+        return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
+                .flatMap(task -> getFullResponse(task)), TaskResponse.class);
     }
 
     public Mono<ServerResponse> createTask(ServerRequest request) {
@@ -58,16 +59,9 @@ public class TaskHandler {
                     task.setId(UUID.randomUUID().toString());
                     task.setCreatedAt(Instant.now());
                     task.setStatus(TaskStatus.TODO);
-                    Flux<Task> savedTask = Flux.just(task).zipWith( userRepository.findById(task.getAssigneeId()), (a, b) -> {
-                        a.setAssignee(b);
-                        return a;
-                    }).zipWith(userRepository.findById(task.getAuthorId()), (c, d) -> {
-                        c.setAuthor(d);
-                        return c;
-                    }).flatMap(result -> taskRepository.save(result));
 
-                    return ServerResponse.ok().body(savedTask
-                            .map(taskk -> taskMapper.taskToResponse(taskk)), TaskResponse.class);
+                    return ServerResponse.ok().body(taskRepository.save(task)
+                            .flatMap(savedTask -> getFullResponse(savedTask)), TaskResponse.class);
                 });
 
     }
@@ -76,54 +70,46 @@ public class TaskHandler {
         return request.bodyToMono(UpdateTaskRequest.class)
                 .flatMap(update -> Mono.just(taskMapper.requestToTask(request.pathVariable("id"), update)))
                 .flatMap(task -> {
-                    Mono<Task> updatedTask = taskRepository.findById(request.pathVariable("id"))
+                    return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
                             .flatMap(existedTask -> {
                                 Utils.copyNonNullValues(task, existedTask);
                                 existedTask.setUpdatedAt(Instant.now());
-                                return taskRepository.save(existedTask).zipWith( userRepository.findById(existedTask.getAssigneeId()), (a, b) -> {
-                                    a.setAssignee(b);
-                                    return a;
-                                }).zipWith(userRepository.findById(existedTask.getAuthorId()), (c, d) -> {
-                                    c.setAuthor(d);
-                                    return c;
-                                });
-                            });
-
-                    return ServerResponse.ok().body(updatedTask.map(task1 -> taskMapper.taskToResponse(task1)), TaskResponse.class);
+                                return taskRepository.save(existedTask);
+                            })
+                            .flatMap(updatedTask -> getFullResponse(updatedTask)), TaskResponse.class);
                 });
     }
 
     public Mono<ServerResponse> changeAuthor(ServerRequest request) {
-        return ServerResponse.ok().body(
-                Flux.zip(taskRepository.findById(request.pathVariable("id")),
-                    userRepository.findById(request.pathVariable("authorId")), (c, f) -> {
-                    c.setAuthor(f);
-                    return c;
+        return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
+                .map(task -> {
+                    task.setAuthorId(request.pathVariable("authorId"));
+                    return task;
                 })
-                        .flatMap(taskRepository::save)
-                        .map(taskMapper::taskToResponse), TaskResponse.class);
+                .flatMap(taskRepository::save)
+                .flatMap(task -> getFullResponse(task)), TaskResponse.class);
     }
 
     public Mono<ServerResponse> changeAssignee(ServerRequest request) {
-        return ServerResponse.ok().body(
-                Flux.zip(taskRepository.findById(request.pathVariable("id")),
-                                userRepository.findById(request.pathVariable("assigneeId")), (c, f) -> {
-                                    c.setAuthor(f);
-                                    return c;
-                                })
-                        .flatMap(taskRepository::save)
-                        .map(taskMapper::taskToResponse), TaskResponse.class);
+        return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
+                .map(task -> {
+                    task.setAssigneeId(request.pathVariable("assigneeId"));
+                    return task;
+                })
+                .flatMap(taskRepository::save)
+                .flatMap(task -> getFullResponse(task)), TaskResponse.class);
     }
 
     public Mono<ServerResponse> addObserver(ServerRequest request) {
-        return ServerResponse.ok().body(
-                Flux.zip(taskRepository.findById(request.pathVariable("id")),
-                                userRepository.findById(request.pathVariable("observerId")), (c, f) -> {
-                                     c.getObservers().add(f);
-                                    return c;
-                                })
-                        .flatMap(savedTask -> taskRepository.save(savedTask))
-                        .map(task -> taskMapper.taskToResponse(task)), TaskResponse.class);
+        return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
+                .map(task -> {
+                    Set<String> observersId = task.getObserverIds();
+                    observersId.add(request.pathVariable("observerId"));
+                    task.setObserverIds(observersId);
+                    return task;
+                })
+                .flatMap(taskRepository::save)
+                .flatMap(task -> getFullResponse(task)), TaskResponse.class);
     }
 
     public Mono<ServerResponse> deleteTask(ServerRequest request) {
@@ -131,5 +117,22 @@ public class TaskHandler {
         return ServerResponse.noContent().build();
     }
 
+
+    private Mono<TaskResponse> getFullResponse(Task task) {
+            Mono<User> author = userRepository.findById(task.getAuthorId());
+            Mono<User> assignee = userRepository.findById(task.getAssigneeId());
+            Mono<Set<User>> observers = userRepository.findAllByIdIn(task.getObserverIds()).collect(Collectors.toSet());
+
+            return Mono.zip(author, assignee, observers)
+                    .map(tuple -> {
+                        User athr = tuple.getT1();
+                        task.setAuthor(athr);
+                        User asgn = tuple.getT2();
+                        task.setAssignee(asgn);
+                        Set<User> susr = tuple.getT3();
+                        task.setObservers(susr);
+                        return taskMapper.taskToResponse(task);
+                    }).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found")));
+    }
 
 }
