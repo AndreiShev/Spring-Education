@@ -2,7 +2,13 @@ package com.example.tasktracker.configuration;
 
 
 import com.example.tasktracker.handler.TaskHandler;
+import com.example.tasktracker.handler.TaskUpdateHandler;
 import com.example.tasktracker.handler.UserHandler;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -11,14 +17,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 public class Routers {
-    /**
-     * Для сущности User необходимо создать API, который предоставляет возможность:
-     *
-     * найти всех пользователей,
-     * найти пользователя по ID,
-     * создать пользователя,
-     * обновить информацию о пользователе,
-     * удалить пользователя по ID.*/
 
     @Bean
     public RouterFunction<ServerResponse> userRouter(UserHandler userHandler) {
@@ -32,16 +30,15 @@ public class Routers {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> taskRouter(TaskHandler taskHandler) {
+    public RouterFunction<ServerResponse> taskRouter(TaskHandler taskHandler, TaskUpdateHandler taskUpdateHandler) {
         return RouterFunctions.route()
                 .GET("api/tasks", taskHandler::getAllTask)
                 .GET("api/tasks/{id}", taskHandler::getTaskById)
                 .POST("api/tasks", taskHandler::createTask)
-                .PUT("api/tasks/{id}", taskHandler::updateTask)
+                .PUT("api/tasks/{id}", taskUpdateHandler::updateTask)
                 .PUT("api/tasks/{id}/author/{authorId}/change", taskHandler::changeAuthor)
                 .PUT("api/tasks/{id}/assignee/{assigneeId}/change", taskHandler::changeAssignee)
                 .PUT("api/tasks/{id}/observers/{observerId}/add", taskHandler::addObserver)
                 .DELETE("api/tasks/{id}", taskHandler::deleteTask).build();
     }
-
 }

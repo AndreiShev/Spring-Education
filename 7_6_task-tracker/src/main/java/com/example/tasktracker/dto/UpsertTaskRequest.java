@@ -2,24 +2,28 @@ package com.example.tasktracker.dto;
 
 
 import com.example.tasktracker.entity.TaskStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpsertTaskRequest {
+    @NotBlank(message = "Наименование задачи должно быть заполнено")
+    @Size(min = 2, max = 60, message = "Наименование задачи должно содержать от {min} до {max} символов")
     private String name;
 
+    @NotBlank(message = "Наименование задачи должно быть заполнено")
+    @Size(min = 2, max = 60, message = "Описание задачи должно содержать от {min} до {max}")
     private String description;
 
-    private TaskStatus status;
-
+    @NotBlank(message = "Автор задачи должен быть заполнен")
     private String authorId;
 
+    @NotBlank(message = "Исполнитель должен быть заполнен")
     private String assigneeId;
 
 }

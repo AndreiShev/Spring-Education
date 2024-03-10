@@ -15,10 +15,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
 
     @Id
-    @Positive(message = "ID автора новости должно быть положительно")
     private String id;
 
-    @NotNull
     private String username;
 
     private String email;
