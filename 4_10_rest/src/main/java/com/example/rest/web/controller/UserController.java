@@ -1,6 +1,8 @@
 package com.example.rest.web.controller;
 
 import com.example.rest.mapper.UserMapper;
+import com.example.rest.model.Role;
+import com.example.rest.model.RoleType;
 import com.example.rest.model.User;
 import com.example.rest.services.UserService;
 import com.example.rest.web.model.RequestGetAll;
@@ -12,6 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +30,7 @@ public class UserController {
 
 
     @GetMapping
+    //@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserListResponse> findAll(@RequestBody @Valid RequestGetAll request) {
         return ResponseEntity.ok(
                 userMapper.usersListToUserResponseList(
@@ -35,7 +41,8 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    public ResponseEntity<UserResponse> findById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return ResponseEntity.ok(
             userMapper.userToResponse(
                     userServiceImpl.findById(id)
@@ -44,13 +51,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid UpsertUserRequest request) {
-        User newUser = userServiceImpl.save(userMapper.requestToUser(request));
+    public ResponseEntity<UserResponse> create(@RequestBody @Valid UpsertUserRequest request,
+                                               @RequestParam(name = "roleType") RoleType roleType) {
+        User newUser = userServiceImpl.save(userMapper.requestToUser(request), Role.from(roleType));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.userToResponse(newUser));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<UserResponse> update(@PathVariable("id") Long userId,
                                                @RequestBody @Valid UpsertUserRequest request) {
         User updatedUser = userServiceImpl.update(userMapper.requestToUser(userId, request));
@@ -59,6 +68,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userServiceImpl.deleteById(id);
         return ResponseEntity.noContent().build();

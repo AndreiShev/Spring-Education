@@ -5,10 +5,10 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     hibernate:
-      ddl-auto=update: create
+      ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:6432/rest_db
     username: postgres
@@ -22,3 +22,5 @@ spring:
 app:
   check-client-api-header: false
   client-api-key: 12345
+  security:
+    type: db

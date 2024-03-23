@@ -47,4 +47,14 @@ public class User {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Instant updateAt;
+
+    private String username;
+
+    private String password;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @Builder.Default
+    private List<Role> roles = new ArrayList<>();
 }

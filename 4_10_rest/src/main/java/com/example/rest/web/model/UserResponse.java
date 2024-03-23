@@ -18,5 +18,9 @@ public class UserResponse {
 
     private String email;
 
+    private String username;
+
+    private RoleResponse role;
+
     private List<NewsResponseForResponseList> news = new ArrayList<>();
 }

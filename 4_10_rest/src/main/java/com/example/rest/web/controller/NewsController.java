@@ -4,22 +4,12 @@ import com.example.rest.mapper.NewsMapper;
 import com.example.rest.model.News;
 import com.example.rest.services.NewsService;
 import com.example.rest.web.model.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.HandlerMapping;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
 
 @RestController
 @AllArgsConstructor

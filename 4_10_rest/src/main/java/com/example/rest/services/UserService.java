@@ -1,7 +1,8 @@
 package com.example.rest.services;
 
+import com.example.rest.model.Role;
 import com.example.rest.model.User;
-import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -11,11 +12,11 @@ public interface UserService {
 
     User findById(Long id);
 
-    User save(User user);
+    User save(User user, Role role);
 
     User update(User user);
 
     void deleteById(Long id);
 
-    //User saveWithOrders(User user, List<Order> orders);
+    User findByUserName(String username);
 }
