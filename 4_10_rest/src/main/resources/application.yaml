@@ -24,3 +24,8 @@ app:
   client-api-key: 12345
   security:
     type: db
+
+permissions:
+  advanced:
+    - ROLE_ADMIN
+    - ROLE_MODERATOR

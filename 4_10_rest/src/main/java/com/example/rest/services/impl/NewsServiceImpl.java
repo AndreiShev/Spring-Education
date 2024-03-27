@@ -14,6 +14,8 @@ import com.example.rest.utils.BeanUtils;
 import com.example.rest.web.model.NewsFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -43,7 +45,9 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public News save(News news) {
-        User user = userService.findById(news.getUser().getId());
+        UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByUserName(userDetails.getUsername());
         NewsCategory newsCategory = newsCategoryService.findById(news.getNewsCategory().getId());
         news.setNewsCategory(newsCategory);
         news.setUser(user);
@@ -54,10 +58,8 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @CheckWhoEditingNews
     public News update(News news) {
-        User user = userService.findById(news.getUser().getId());
         NewsCategory newsCategory = newsCategoryService.findById(news.getNewsCategory().getId());
         news.setNewsCategory(newsCategory);
-        news.setUser(user);
         News existNew = findById(news.getId());
         BeanUtils.copyNonNullProperties(news, existNew);
 

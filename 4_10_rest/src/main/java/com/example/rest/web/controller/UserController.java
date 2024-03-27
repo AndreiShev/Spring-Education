@@ -30,7 +30,7 @@ public class UserController {
 
 
     @GetMapping
-    //@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserListResponse> findAll(@RequestBody @Valid RequestGetAll request) {
         return ResponseEntity.ok(
                 userMapper.usersListToUserResponseList(
@@ -41,7 +41,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<UserResponse> findById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return ResponseEntity.ok(
             userMapper.userToResponse(
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<UserResponse> update(@PathVariable("id") Long userId,
                                                @RequestBody @Valid UpsertUserRequest request) {
         User updatedUser = userServiceImpl.update(userMapper.requestToUser(userId, request));
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userServiceImpl.deleteById(id);
         return ResponseEntity.noContent().build();

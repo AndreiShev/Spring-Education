@@ -35,7 +35,7 @@ dependencies {
 
 	annotationProcessor("org.projectlombok:lombok")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
-
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("net.javacrumbs.json-unit:json-unit:2.31.0")
 }

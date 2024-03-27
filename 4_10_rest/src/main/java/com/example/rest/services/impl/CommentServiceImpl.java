@@ -10,6 +10,8 @@ import com.example.rest.services.UserService;
 import com.example.rest.utils.BeanUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -35,7 +37,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment save(Comment comment) {
-        User user = userService.findById(comment.getUser().getId());
+        UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findByUserName(userDetails.getUsername());
         comment.setUser(user);
 
         return commentRepository.save(comment);
@@ -44,11 +48,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @CheckWhoEditingComment
     public Comment update(Comment comment) {
-        User user = userService.findById(comment.getUser().getId());
-        comment.setUser(user);
         Comment existComment = findById(comment.getId());
         BeanUtils.copyNonNullProperties(comment, existComment);
-        existComment.setUser(user);
 
         return commentRepository.save(existComment);
     }

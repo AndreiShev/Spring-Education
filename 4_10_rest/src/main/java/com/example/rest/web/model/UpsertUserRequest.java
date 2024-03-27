@@ -26,5 +26,7 @@ public class UpsertUserRequest {
     //@Pattern(regexp = "^[A-Za-z0-9@.]$", message = "Почта содержит запрещенные символы")
     private String email;
 
+    @NotBlank(message = "Пароль должен быть заполнен!")
+    @Size(min = 6, max = 30, message = "Пароль не может быть меньше {min} и больше {max}")
     private String password;
 }

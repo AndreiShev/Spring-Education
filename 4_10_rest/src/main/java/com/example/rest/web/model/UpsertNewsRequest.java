@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpsertNewsRequest {
-    @NotNull(message = "Автор новости должен быть заполнен")
-    @Positive(message = "ID автора новости должно быть положительно")
-    private Long userId;
-
     @NotNull(message = "Категория новостей должна быть заполнена")
     @Positive(message = "ID категории новостей должно быть положительно")
     private Integer newsCategoryId;

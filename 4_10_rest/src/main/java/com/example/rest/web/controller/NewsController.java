@@ -8,6 +8,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -20,6 +23,7 @@ public class NewsController {
 
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<NewsListResponse> findAll(@RequestBody @Valid NewsFilter filter) {
         return ResponseEntity.ok(
                 newsMapper.newsListToNewsListResponse(
@@ -29,6 +33,7 @@ public class NewsController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<NewsResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 newsMapper.newsToResponse(
@@ -38,8 +43,11 @@ public class NewsController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
     public ResponseEntity<NewsResponse> create(@RequestBody @Valid UpsertNewsRequest request) {
+
         News news = newsServiceImpl.save(newsMapper.requestToNews(request));
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newsMapper.newsToResponse(news));
     }
@@ -52,8 +60,9 @@ public class NewsController {
         return ResponseEntity.ok(newsMapper.newsToResponse(updatedNews));
     }
 
-    @DeleteMapping(path = "/", params = {"id", "userId"})
-    public ResponseEntity<Void> delete(@RequestParam Long id) {
+    @DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN') or hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MODERATOR')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         newsServiceImpl.deleteById(id);
         return ResponseEntity.noContent().build();
     }

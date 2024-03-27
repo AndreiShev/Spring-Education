@@ -1,6 +1,8 @@
 package com.example.rest.services.impl;
 
+import com.example.rest.aop.CheckRoleUser;
 import com.example.rest.exception.EntityNotFoundException;
+import com.example.rest.exception.UserAlreadyExistsException;
 import com.example.rest.model.Role;
 import com.example.rest.model.User;
 import com.example.rest.repository.RoleRepository;
@@ -36,12 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CheckRoleUser
     public User findById(Long id) {
-        User user = userRepository.findById(id).
-                orElseThrow(
-                        () -> new EntityNotFoundException(MessageFormat.format("Пользователь с таким ID {0} не найден", id))
-                );
-
         return userRepository.findById(id).
                 orElseThrow(
                         () -> new EntityNotFoundException(MessageFormat.format("Пользователь с таким ID {0} не найден", id))
@@ -61,6 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CheckRoleUser
     public User update(User user) {
         User existedUser = findById(user.getId());
         BeanUtils.copyNonNullProperties(user, existedUser);
@@ -69,12 +68,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CheckRoleUser
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 
 
     private String getUserName(User user) {
-        return user.getLastName() + " " + user.getFirstName() + " (" + user.getEmail() + ")";
+        String username = user.getLastName() + " " + user.getFirstName() + " (" + user.getEmail() + ")";
+
+        if (userRepository.findByUsername(username) != null) {
+            throw new UserAlreadyExistsException("Пользовтаель с username " + username + " уже существует.");
+        }
+
+        return username ;
     }
 }
