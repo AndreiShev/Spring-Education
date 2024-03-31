@@ -10,6 +10,7 @@ import com.example.tasktracker.mapper.TaskMapper;
 import com.example.tasktracker.repository.TaskRepository;
 import com.example.tasktracker.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -39,10 +40,12 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
         this.taskMapper = taskMapper;
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> getAllTask(ServerRequest request) {
         return ServerResponse.ok().body(taskRepository.findAll(), Task.class);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> getTaskById(ServerRequest request) {
         return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Task not found")))
@@ -50,6 +53,7 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
                         .flatMap(task -> Mono.just(taskMapper.taskToResponse(task))), TaskResponse.class);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> createTask(ServerRequest request) {
         return request.bodyToMono(UpsertTaskRequest.class)
                 .flatMap(upsertTaskRequest -> Mono.just(taskMapper.requestToTask(validateEntity(upsertTaskRequest))))
@@ -71,6 +75,7 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
 
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> changeAuthor(ServerRequest request) {
         return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Task not found")))
@@ -85,6 +90,7 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
                 .flatMap(task -> Mono.just(taskMapper.taskToResponse(task))), TaskResponse.class);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> changeAssignee(ServerRequest request) {
         return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Task not found")))
@@ -99,6 +105,7 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
                 .flatMap(task -> Mono.just(taskMapper.taskToResponse(task))), TaskResponse.class);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER') or hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> addObserver(ServerRequest request) {
         return ServerResponse.ok().body(taskRepository.findById(request.pathVariable("id"))
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Task not found")))
@@ -115,6 +122,7 @@ public class TaskHandler extends AbstractValidationHandler<UpsertTaskRequest, Va
 
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     public Mono<ServerResponse> deleteTask(ServerRequest request) {
         taskRepository.deleteById(request.pathVariable("id")).subscribe();
         return ServerResponse.noContent().build();

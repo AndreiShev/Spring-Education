@@ -17,4 +17,8 @@ public class UpsertUserRequest {
 
     @NotBlank(message = "Почта должна быть заполнена")
     private String email;
+
+    @NotBlank(message = "Пароль должен быть заполнен!")
+    @Size(min = 6, max = 30, message = "Пароль не может быть меньше {min} и больше {max}")
+    private String password;
 }

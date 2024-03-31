@@ -4,26 +4,22 @@ package com.example.tasktracker.configuration;
 import com.example.tasktracker.handler.TaskHandler;
 import com.example.tasktracker.handler.TaskUpdateHandler;
 import com.example.tasktracker.handler.UserHandler;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
-import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.server.*;
 
 @Configuration
 public class Routers {
 
     @Bean
     public RouterFunction<ServerResponse> userRouter(UserHandler userHandler) {
+
         return RouterFunctions.route()
                 .GET("api/users", userHandler::getAllItem)
                 .GET("api/users/{id}", userHandler::findById)
-                .POST("api/users", userHandler::createUser)
+                .POST("api/users",  RequestPredicates.queryParam("roleType", t -> true), userHandler::createUser)
                 .PUT("api/users/{id}", userHandler::updateUser)
                 .DELETE("api/users/{id}", userHandler::deleteUser)
                 .build();

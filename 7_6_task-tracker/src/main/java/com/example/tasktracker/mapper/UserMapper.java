@@ -1,19 +1,13 @@
 package com.example.tasktracker.mapper;
 
-import com.example.tasktracker.dto.UpsertTaskRequest;
 import com.example.tasktracker.dto.UpsertUserRequest;
 import com.example.tasktracker.dto.UserResponse;
 import com.example.tasktracker.entity.User;
 
-import com.example.tasktracker.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +24,7 @@ public interface UserMapper {
 
     default Set<User> getSetUsers(Set<UpsertUserRequest> setUsers) {
         return setUsers.stream()
-                .map(upsert -> new User(UUID.randomUUID().toString(), upsert.getUsername(), upsert.getEmail()))
+                .map(upsert -> new User(UUID.randomUUID().toString(), upsert.getUsername(), upsert.getEmail(), upsert.getPassword()))
                 .collect(Collectors.toSet());
     }
 

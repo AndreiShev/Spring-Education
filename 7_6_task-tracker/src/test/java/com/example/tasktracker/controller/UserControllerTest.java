@@ -34,8 +34,6 @@ public class UserControllerTest extends AbstractTest {
                 .expectStatus().isOk()
                 .expectBody(User.class)
                 .isEqualTo(expectedData);
-
-
     }
 
 }
