@@ -46,8 +46,8 @@ public class AbstractTest {
     public void setup() {
         userRepository.saveAll(
                 List.of(
-                        new User(FIRST_ITEM_ID, "user 1", "user_1@mail.com"),
-                        new User(SECOND_ITEM_ID, "user 2", "user_2@mail.com")
+                        new User(FIRST_ITEM_ID, "user 1", "user_1@mail.com", "sdfasdf"),
+                        new User(SECOND_ITEM_ID, "user 2", "user_2@mail.com", "asdfasdf")
                 )
         ).collectList().block();
     }

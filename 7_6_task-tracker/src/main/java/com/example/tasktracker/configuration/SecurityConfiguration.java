@@ -48,7 +48,7 @@ public class SecurityConfiguration {
 
     private ServerHttpSecurity buildDefaultHttpSecurity(ServerHttpSecurity http) {
         return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange((auth) -> auth.pathMatchers("/api/users/**").hasAnyRole("USER", "MODERATOR")
+                .authorizeExchange((auth) -> auth.pathMatchers("/api/users/**").permitAll()
                         .pathMatchers("/api/tasks/**").hasAnyRole("USER", "MODERATOR")
                         .anyExchange().authenticated())
                 .httpBasic(Customizer.withDefaults());
