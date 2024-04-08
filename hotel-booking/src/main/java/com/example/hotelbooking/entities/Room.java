@@ -1,0 +1,34 @@
+package com.example.hotelbooking.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "room")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Room {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String description;
+    private Short number;
+    private Double price;
+    private Short maximumNumberOfPeople;
+    private LocalDateTime bookingFrom;
+    private LocalDateTime bookingTo;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
+
+}

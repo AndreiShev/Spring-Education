@@ -11,12 +11,12 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy =  ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy =  ReportingPolicy.IGNORE, uses = {RoomMapper.class})
 public interface HotelMapper {
 
     Hotel requestToHotel(UpsertHotelRequest request);
 
-    @Mapping(source = "userId", target = "id")
+    @Mapping(source = "roomId", target = "id")
     Hotel requestToHotel(Long userId, UpsertHotelRequest request);
 
     HotelResponse hotelToResponse(Hotel user);

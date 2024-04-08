@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.Mapping;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -27,4 +30,7 @@ public class Hotel {
     private Double distanceFromCityCenter;
     private Double rating;
     private Long numberOfRatings;
+
+    @OneToMany(mappedBy = "hotel")
+    private Set<Room> rooms;
 }
