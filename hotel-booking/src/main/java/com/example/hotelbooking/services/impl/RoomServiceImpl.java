@@ -31,7 +31,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room save(Room room) {
-        return repository.save(room);
+        Room newRoom = repository.save(room);
+        return newRoom;
     }
 
     @Override

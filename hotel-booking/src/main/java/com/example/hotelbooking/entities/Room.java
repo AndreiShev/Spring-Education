@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,10 +36,10 @@ public class Room {
     private LocalDateTime bookingTo;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id")
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
     private Hotel hotel;
 
-    @ManyToMany(mappedBy = "rooms")
+    @ManyToMany(mappedBy = "rooms", fetch = FetchType.EAGER)
     private List<Booking> bookings;
 
 }

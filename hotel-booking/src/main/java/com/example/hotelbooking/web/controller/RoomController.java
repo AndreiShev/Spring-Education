@@ -22,7 +22,7 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomResponse> saveRoom(@RequestParam UpsertRoomRequest request) {
+    public ResponseEntity<RoomResponse> saveRoom(@RequestBody UpsertRoomRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             roomMapper.roomToResponseRoom(roomService.save(roomMapper.roomRequestToRoom(request)))
         );
@@ -30,7 +30,7 @@ public class RoomController {
 
     @PostMapping("/{id}")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long id,
-                                                   @RequestParam UpsertRoomRequest request) {
+                                                   @RequestBody UpsertRoomRequest request) {
         return ResponseEntity.ok(
             roomMapper.roomToResponseRoom(roomService.update(id, roomMapper.roomRequestToRoom(id, request)))
         );

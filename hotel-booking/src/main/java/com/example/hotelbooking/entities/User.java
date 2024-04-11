@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,6 +29,6 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "renter", fetch = FetchType.EAGER)
     private List<Booking> bookingList;
 }

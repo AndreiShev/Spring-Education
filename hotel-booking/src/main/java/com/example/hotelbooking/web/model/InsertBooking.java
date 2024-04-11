@@ -18,5 +18,5 @@ public class InsertBooking {
 
     private Long userId;
 
-    private List<Long> rooms;
+    private List<Long> roomsId;
 }

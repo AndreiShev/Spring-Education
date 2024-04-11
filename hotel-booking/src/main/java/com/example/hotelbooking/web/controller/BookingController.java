@@ -20,7 +20,7 @@ public class BookingController {
     private final BookingMapper bookingMapper;
 
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(@RequestParam InsertBooking request) {
+    public ResponseEntity<BookingResponse> createBooking(@RequestBody InsertBooking request) {
        return ResponseEntity.status(HttpStatus.CREATED).body(
                bookingMapper.bookingToResponse(bookingService.create(bookingMapper.requestToBooking(request)))
        );
@@ -29,5 +29,11 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<BookingListResponse> getAll() {
         return ResponseEntity.ok(bookingMapper.bookingListToResponseList(bookingService.getAll()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        bookingService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,32 +1,34 @@
 package com.example.hotelbooking.mapper;
 
 
+import com.example.hotelbooking.entities.Hotel;
 import com.example.hotelbooking.entities.Room;
 import com.example.hotelbooking.services.HotelService;
 import com.example.hotelbooking.web.model.UpsertRoomRequest;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@AllArgsConstructor
+
 public abstract class RoomMapperDelegate implements RoomMapper {
-    private final HotelService hotelService;
+
+    @Autowired
+    private HotelService hotelService;
+
     @Override
     public Room roomRequestToRoom(UpsertRoomRequest request) {
         Room room = new Room();
-        room.setDescription(room.getDescription());
-        room.setName(room.getName());
-        room.setNumber(room.getNumber());
-        room.setPrice(room.getPrice());
-        room.setMaximumNumberOfPeople(room.getMaximumNumberOfPeople());
-        room.setBookingFrom(room.getBookingFrom());
-        room.setBookingTo(room.getBookingTo());
-        room.setHotel(hotelService.getHotelById(request.getHotel()));
+        room.setDescription(request.getDescription());
+        room.setName(request.getName());
+        room.setNumber(request.getNumber());
+        room.setPrice(request.getPrice());
+        room.setMaximumNumberOfPeople(request.getMaximumNumberOfPeople());
+        room.setHotel(hotelService.getHotelById(request.getHotelId()));
         return room;
     }
 
     @Override
-    public Room roomRequestToRoom(Long id, UpsertRoomRequest request) {
+    public Room roomRequestToRoom(Long roomId, UpsertRoomRequest request) {
         Room room = roomRequestToRoom(request);
-        room.setId(id);
+        room.setId(roomId);
         return room;
     }
 
@@ -38,9 +40,7 @@ public abstract class RoomMapperDelegate implements RoomMapper {
         request.setNumber(room.getNumber());
         request.setPrice(room.getPrice());
         request.setMaximumNumberOfPeople(room.getMaximumNumberOfPeople());
-        request.setBookingFrom(room.getBookingFrom());
-        request.setBookingTo(room.getBookingTo());
-        request.setHotel(room.getHotel().getId());
+        request.setHotelId(room.getHotel().getId());
         return request;
     }
 

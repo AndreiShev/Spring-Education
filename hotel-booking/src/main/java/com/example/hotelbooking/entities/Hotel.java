@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.Mapping;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -31,6 +33,6 @@ public class Hotel {
     private Double rating;
     private Long numberOfRatings;
 
-    @OneToMany(mappedBy = "hotel")
+    @OneToMany(mappedBy = "hotel", fetch = FetchType.EAGER)
     private Set<Room> rooms;
 }

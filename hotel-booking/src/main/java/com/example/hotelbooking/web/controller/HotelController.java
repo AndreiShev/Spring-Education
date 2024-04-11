@@ -19,7 +19,7 @@ public class HotelController {
     private final HotelMapper hotelMapper;
 
     @GetMapping
-    public ResponseEntity<HotelResponseList> findAll(@RequestParam RequestGetAll request) {
+    public ResponseEntity<HotelResponseList> findAll(@RequestBody RequestGetAll request) {
         return ResponseEntity.ok(
             hotelMapper.hotelListToHotelResponseList(hotelService.getAllHotel(request.getPageNumber(), request.getLimit()))
         );
@@ -33,7 +33,7 @@ public class HotelController {
     }
 
     @PostMapping
-    public ResponseEntity<HotelResponse> save(@RequestParam UpsertHotelRequest request) {
+    public ResponseEntity<HotelResponse> save(@RequestBody UpsertHotelRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             hotelMapper.hotelToResponse(hotelService.save(hotelMapper.requestToHotel(request)))
         );
@@ -41,7 +41,7 @@ public class HotelController {
 
     @PostMapping("/{id}")
     public ResponseEntity<HotelResponse> update(@PathVariable("id") Long hotelId,
-                                                @RequestParam UpsertHotelRequest request) {
+                                                @RequestBody UpsertHotelRequest request) {
         return ResponseEntity.ok(
             hotelMapper.hotelToResponse(hotelService.update(hotelId, hotelMapper.requestToHotel(request)))
         );

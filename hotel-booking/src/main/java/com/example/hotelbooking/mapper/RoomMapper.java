@@ -1,5 +1,6 @@
 package com.example.hotelbooking.mapper;
 
+import com.example.hotelbooking.entities.Hotel;
 import com.example.hotelbooking.entities.Room;
 import com.example.hotelbooking.web.model.RoomResponse;
 import com.example.hotelbooking.web.model.UpsertRoomRequest;
@@ -12,6 +13,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RoomMapper {
 
+
     Room roomRequestToRoom(UpsertRoomRequest request);
 
     @Mapping(source = "roomId", target = "id")
@@ -20,4 +22,6 @@ public interface RoomMapper {
     RoomResponse roomToResponseRoom(Room room);
 
     UpsertRoomRequest roomToRequest(Room room);
+
+
 }

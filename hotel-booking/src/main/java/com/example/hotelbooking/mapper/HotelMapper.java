@@ -17,7 +17,7 @@ public interface HotelMapper {
     Hotel requestToHotel(UpsertHotelRequest request);
 
     @Mapping(source = "roomId", target = "id")
-    Hotel requestToHotel(Long userId, UpsertHotelRequest request);
+    Hotel requestToHotel(Long roomId, UpsertHotelRequest request);
 
     HotelResponse hotelToResponse(Hotel user);
 

@@ -9,4 +9,6 @@ public interface BookingService {
     Booking create(Booking booking);
 
     List<Booking> getAll();
+
+    void delete(Long id);
 }

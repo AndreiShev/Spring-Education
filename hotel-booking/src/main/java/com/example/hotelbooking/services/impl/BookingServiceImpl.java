@@ -5,9 +5,11 @@ import com.example.hotelbooking.entities.Room;
 import com.example.hotelbooking.exception.BookingException;
 import com.example.hotelbooking.repository.BookingRepository;
 import com.example.hotelbooking.services.BookingService;
+import com.example.hotelbooking.services.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,12 +19,19 @@ import java.util.List;
 @AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final RoomService roomService;
 
     @Override
     public Booking create(Booking booking) {
+        List<Room> rooms = new ArrayList<>();
+        rooms.addAll(booking.getRooms());
         if (checkRoomDates(booking)) {
-            return bookingRepository.save(booking);
+            booking.getRooms().clear();
+            Booking savedBooking = bookingRepository.save(booking);
+            savedBooking.getRooms().addAll(rooms);
+            return bookingRepository.save(savedBooking);
         }
+
 
         throw new BookingException(
                 MessageFormat.format("Комнаты на даты {0} - {1} уже заняты",
@@ -40,10 +49,10 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
 
         for (Room item: booking.getRooms()) {
-            bookings.addAll(bookingRepository.getBookingsAfterToday(item.getId(),
-                    LocalDateTime.now(),
-                    booking.getBookingFrom(),
-                    booking.getBookingTo()));
+            bookings.addAll(bookingRepository.getBookingsAfterToday(item.getId()
+                    , LocalDateTime.now()
+                    , item.getBookingFrom()
+                    , item.getBookingTo()));
         }
 
         if (bookings.size() == 0) {
@@ -51,5 +60,9 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return false;
+    }
+
+    public void delete(Long id) {
+        bookingRepository.deleteById(id);
     }
 }
