@@ -4,6 +4,7 @@ import com.example.hotelbooking.mapper.UserMapper;
 import com.example.hotelbooking.services.UserService;
 import com.example.hotelbooking.web.model.UpsertUserRequest;
 import com.example.hotelbooking.web.model.UserResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UpsertUserRequest request) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UpsertUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             userMapper.userToResponse(userService.save(userMapper.requestToUser(request)))
         );

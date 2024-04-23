@@ -29,7 +29,7 @@ public class Booking {
     @JoinColumn(name="user_id", referencedColumnName = "id")
     private User renter;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "booking_room",
             joinColumns = @JoinColumn(name = "booking_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "room_id", referencedColumnName = "id"))

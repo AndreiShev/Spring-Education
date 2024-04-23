@@ -9,11 +9,11 @@ import com.example.hotelbooking.services.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -47,13 +47,11 @@ public class BookingServiceImpl implements BookingService {
 
     private boolean checkRoomDates(Booking booking) {
         List<Booking> bookings = new ArrayList<>();
-
-        for (Room item: booking.getRooms()) {
-            bookings.addAll(bookingRepository.getBookingsAfterToday(item.getId()
-                    , LocalDateTime.now()
-                    , item.getBookingFrom()
-                    , item.getBookingTo()));
-        }
+        bookings.addAll(bookingRepository.getBookingsAfterToday(
+                booking.getRooms().stream().map(book -> book.getId()).collect(Collectors.toList())
+                , LocalDateTime.now()
+                , booking.getBookingFrom()
+                , booking.getBookingTo()));
 
         if (bookings.size() == 0) {
             return true;

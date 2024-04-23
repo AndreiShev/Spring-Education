@@ -7,6 +7,8 @@ import com.example.hotelbooking.web.model.BookingResponse;
 import com.example.hotelbooking.web.model.InsertBooking;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -33,10 +35,12 @@ public abstract class BookingMapperDelegate implements BookingMapper {
 
     @Override
     public Booking requestToBooking(InsertBooking insertBooking) {
+        /*2024-04-20 20:39:4*/
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Booking booking = new Booking();
         booking.setRenter(userService.findById(insertBooking.getUserId()));
-        booking.setBookingFrom(insertBooking.getBookingFrom());
-        booking.setBookingTo(insertBooking.getBookingTo());
+        booking.setBookingFrom(LocalDateTime.parse(insertBooking.getBookingFrom(), formatter));
+        booking.setBookingTo(LocalDateTime.parse(insertBooking.getBookingTo(), formatter));
         booking.getRooms().addAll(insertBooking.getRoomsId().stream().map(room -> roomService.getById(room)).toList());
         return booking;
     }

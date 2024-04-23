@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomResponse {
+    private Long id;
+
     private String name;
 
     private String description;
