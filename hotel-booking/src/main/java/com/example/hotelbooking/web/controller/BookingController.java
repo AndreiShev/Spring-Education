@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,6 +31,7 @@ public class BookingController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<BookingListResponse> getAll() {
         return ResponseEntity.ok(bookingMapper.bookingListToResponseList(bookingService.getAll()));
     }

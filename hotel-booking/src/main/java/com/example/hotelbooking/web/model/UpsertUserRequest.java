@@ -19,7 +19,4 @@ public class UpsertUserRequest {
 
     @NotBlank(message = "Почта не может быть пустой")
     private String email;
-
-    @NotBlank(message = "Роль пользователя не может быть пустой")
-    private String userRole;
 }

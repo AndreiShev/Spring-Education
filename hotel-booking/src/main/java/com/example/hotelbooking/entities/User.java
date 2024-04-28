@@ -1,9 +1,7 @@
 package com.example.hotelbooking.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -25,9 +24,11 @@ public class User {
 
     private String email;
 
-    @Column(name = "user_role")
-    @Enumerated(value = EnumType.STRING)
-    private UserRole userRole;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @Builder.Default
+    private List<UserRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "renter", fetch = FetchType.EAGER)
     private List<Booking> bookingList;

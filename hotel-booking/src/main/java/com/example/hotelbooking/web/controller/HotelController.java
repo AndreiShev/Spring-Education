@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +37,7 @@ public class HotelController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<HotelResponse> save(@RequestBody @Valid UpsertHotelRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             hotelMapper.hotelToResponse(hotelService.save(hotelMapper.requestToHotel(request)))
@@ -43,6 +45,7 @@ public class HotelController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<HotelResponse> update(@PathVariable("id") @NotNull @Positive Long hotelId,
                                                 @RequestBody @Valid UpsertHotelRequest request) {
         return ResponseEntity.ok(
@@ -51,6 +54,7 @@ public class HotelController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
         hotelService.delete(id);
         return ResponseEntity.noContent().build();

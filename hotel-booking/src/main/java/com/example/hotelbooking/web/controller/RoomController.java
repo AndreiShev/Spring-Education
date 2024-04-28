@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +34,7 @@ public class RoomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> saveRoom(@RequestBody @Valid UpsertRoomRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             roomMapper.roomToResponseRoom(roomService.save(roomMapper.roomRequestToRoom(request)))
@@ -40,6 +42,7 @@ public class RoomController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable @NotNull @Positive Long id,
                                                    @RequestBody @Valid UpsertRoomRequest request) {
         return ResponseEntity.ok(
@@ -49,6 +52,7 @@ public class RoomController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteRoom(@PathVariable @NotNull @Positive Long id) {
         roomService.delete(id);
         return ResponseEntity.noContent().build();
