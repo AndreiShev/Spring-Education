@@ -2,11 +2,15 @@ package com.example.hotelbooking.services.impl;
 
 import com.example.hotelbooking.entities.Room;
 import com.example.hotelbooking.exception.EntityNotFoundException;
+import com.example.hotelbooking.repository.HotelSpecification;
 import com.example.hotelbooking.repository.RoomRepository;
+import com.example.hotelbooking.repository.RoomSpecification;
 import com.example.hotelbooking.services.HotelService;
 import com.example.hotelbooking.services.RoomService;
 import com.example.hotelbooking.utils.Utils;
+import com.example.hotelbooking.web.model.RoomFilter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -18,8 +22,11 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository repository;
     private final HotelService hotelService;
     @Override
-    public List<Room> getAllRoom() {
-        return repository.findAll();
+    public List<Room> getAllRoom(RoomFilter filter) {
+        return repository.findAll(
+                RoomSpecification.withFilter(filter),
+                PageRequest.of(filter.getPageNumber(), filter.getPageSize())
+        ).getContent();
     }
 
     @Override

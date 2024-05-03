@@ -3,9 +3,12 @@ package com.example.hotelbooking.services.impl;
 import com.example.hotelbooking.entities.Hotel;
 import com.example.hotelbooking.exception.EntityNotFoundException;
 import com.example.hotelbooking.repository.HotelRepository;
+import com.example.hotelbooking.repository.HotelSpecification;
 import com.example.hotelbooking.services.HotelService;
 import com.example.hotelbooking.utils.Utils;
+import com.example.hotelbooking.web.model.HotelFilter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -16,9 +19,32 @@ import java.util.List;
 public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
 
+
     @Override
-    public List<Hotel> getAllHotel(Integer offset, Integer limit) {
-        return hotelRepository.findAll();
+    public Hotel changeRating(Long id, Integer newMark) {
+        if (newMark < 1 || newMark >5) {
+            throw new IllegalArgumentException("Оценка должна быть от 1 до 5");
+        }
+
+        Hotel hotel = getHotelById(id);
+
+        if (hotel.getNumberOfRatings() == 0) {
+            hotel.setRating((double) newMark);
+        } else {
+            Double totalRating = (hotel.getNumberOfRatings() * hotel.getRating()) - hotel.getRating() + newMark;
+            hotel.setRating(totalRating / hotel.getNumberOfRatings());
+        }
+
+        hotel.setNumberOfRatings(hotel.getNumberOfRatings()+1);
+        return save(hotel);
+    }
+
+    @Override
+    public List<Hotel> getAllHotel(HotelFilter filter) {
+        return hotelRepository.findAll(
+                HotelSpecification.withFilter(filter),
+                PageRequest.of(filter.getPageNumber(), filter.getPageSize())
+        ).getContent();
     }
 
     @Override
@@ -30,8 +56,7 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public Hotel save(Hotel hotel) {
-        Hotel savedHotel = hotelRepository.save(hotel);
-        return savedHotel;
+        return hotelRepository.save(hotel);
     }
 
     @Override

@@ -2,10 +2,7 @@ package com.example.hotelbooking.web.controller;
 
 import com.example.hotelbooking.mapper.HotelMapper;
 import com.example.hotelbooking.services.HotelService;
-import com.example.hotelbooking.web.model.HotelResponse;
-import com.example.hotelbooking.web.model.HotelResponseList;
-import com.example.hotelbooking.web.model.RequestGetAll;
-import com.example.hotelbooking.web.model.UpsertHotelRequest;
+import com.example.hotelbooking.web.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -23,9 +20,9 @@ public class HotelController {
     private final HotelMapper hotelMapper;
 
     @GetMapping
-    public ResponseEntity<HotelResponseList> findAll(@RequestBody @Valid RequestGetAll request) {
+    public ResponseEntity<HotelResponseList> findAll(@RequestBody @Valid HotelFilter filter) {
         return ResponseEntity.ok(
-            hotelMapper.hotelListToHotelResponseList(hotelService.getAllHotel(request.getPageNumber(), request.getLimit()))
+            hotelMapper.hotelListToHotelResponseList(hotelService.getAllHotel(filter))
         );
     }
 
@@ -44,7 +41,7 @@ public class HotelController {
         );
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<HotelResponse> update(@PathVariable("id") @NotNull @Positive Long hotelId,
                                                 @RequestBody @Valid UpsertHotelRequest request) {
@@ -58,5 +55,13 @@ public class HotelController {
     public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
         hotelService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<HotelResponse> changeRating(@RequestParam(name = "id") Long id,
+                                             @RequestParam(name = "newMark") Integer newMark) {
+        return ResponseEntity.ok(
+                hotelMapper.hotelToResponse(hotelService.changeRating(id, newMark))
+        );
     }
 }

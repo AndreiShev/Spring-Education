@@ -30,7 +30,10 @@ public class Hotel {
     private String city;
     private String address;
     private Double distanceFromCityCenter;
+
+    @Column(columnDefinition = "double precision default 0")
     private Double rating;
+
     private Long numberOfRatings;
 
     @OneToMany(mappedBy = "hotel", fetch = FetchType.EAGER)

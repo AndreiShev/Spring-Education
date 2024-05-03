@@ -7,7 +7,8 @@ import org.springframework.data.jpa.domain.Specification;
 public interface NewsSpecification {
 
     static Specification<News> withFilter(NewsFilter newsFilter) {
-        return Specification.where(byCategoryName(newsFilter.getCategory()))
+        return Specification
+                .where(byCategoryName(newsFilter.getCategory()))
                 .and(byAuthor(newsFilter.getUser()));
 
     }

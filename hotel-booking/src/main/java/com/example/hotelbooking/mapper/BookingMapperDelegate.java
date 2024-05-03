@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 
 public abstract class BookingMapperDelegate implements BookingMapper {
@@ -35,7 +34,6 @@ public abstract class BookingMapperDelegate implements BookingMapper {
 
     @Override
     public Booking requestToBooking(InsertBooking insertBooking) {
-        /*2024-04-20 20:39:4*/
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Booking booking = new Booking();
         booking.setRenter(userService.findById(insertBooking.getUserId()));

@@ -2,6 +2,7 @@ package com.example.hotelbooking.web.controller;
 
 import com.example.hotelbooking.mapper.RoomMapper;
 import com.example.hotelbooking.services.RoomService;
+import com.example.hotelbooking.web.model.RoomFilter;
 import com.example.hotelbooking.web.model.RoomResponse;
 import com.example.hotelbooking.web.model.RoomResponseList;
 import com.example.hotelbooking.web.model.UpsertRoomRequest;
@@ -22,9 +23,9 @@ public class RoomController {
     private final RoomMapper roomMapper;
 
     @GetMapping
-    public ResponseEntity<RoomResponseList> getAll() {
+    public ResponseEntity<RoomResponseList> getAll(@RequestBody @Valid RoomFilter filter) {
         return ResponseEntity.ok(
-                roomMapper.roomListToResponseList(roomService.getAllRoom())
+                roomMapper.roomListToResponseList(roomService.getAllRoom(filter))
         );
     }
 
@@ -41,7 +42,7 @@ public class RoomController {
         );
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable @NotNull @Positive Long id,
                                                    @RequestBody @Valid UpsertRoomRequest request) {
