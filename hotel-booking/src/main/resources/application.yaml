@@ -17,3 +17,14 @@ spring:
       connection-ini-sql: CREATE schema  if not exists booking_schema
       connection-timeout: 10000
     driver-class-name: org.postgresql.Driver
+  kafka:
+    bootstrap-servers: localhost:9092
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/bookingdb?authSource=admin
+
+app:
+  kafka:
+    kafkaAuthTopic: "auth-topic"
+    kafkaBookingTopic: "booking-service"
+    kafkaMessageGroupId: "kafka-message-group-id"
