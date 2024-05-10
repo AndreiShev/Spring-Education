@@ -29,6 +29,7 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.3.Final")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.2.5")
+	implementation("org.apache.commons:commons-csv:1.11.0")
 
 	runtimeOnly("org.postgresql:postgresql")
 

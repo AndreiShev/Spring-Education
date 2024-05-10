@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/booking/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/hotel/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/room/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/statistic/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
